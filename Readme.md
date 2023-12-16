@@ -8,7 +8,7 @@ Copyright (c) 2023 led-mirage
 
 ## スクリーンショット
 
-
+https://github.com/led-mirage/ZundaGPT/assets/139528700/63c6e9bb-d86b-454b-a972-b7ef55496af8
 
 ## 動作確認環境
 
