@@ -1,0 +1,12 @@
+{
+    "speaker_id": 3,
+    "speed_scale": 1.2,
+    "pitch_scale": 0.0,
+    "voicevox_server": "http://127.0.0.1:50021",
+    "chat_api": "OpenAI",
+    "chat_model": "gpt-3.5-turbo-1106",
+    "chat_character_name": "ずんだ",
+    "chat_instruction": "君は優秀なアシスタント。ずんだもんの話し方で話す。具体的には語尾に「のだ」または「なのだ｜をつけ自然に話す。回答は１００文字以内で簡潔に行う。",
+    "chat_bad_response": "答えられないのだ",
+    "chat_history_size": 6
+}
