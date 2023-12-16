@@ -40,6 +40,59 @@ VOICEVOXのユーザーインターフェイスが不要な人は、VOICEVOX Eng
 VOICEVOX … https://voicevox.hiroshiba.jp/  
 VOICEVOX Engine … https://github.com/VOICEVOX/voicevox_engine
 
+## 実行方法
+
+### 🛩️ 実行ファイル（EXE）を使う場合
+
+#### 1. プロジェクト用のフォルダの作成
+
+任意の場所にプロジェクト用のフォルダを作成してください。
+
+#### 2. アプリのダウンロード
+
+以下のリンクから ZundaGPT.ZIP をダウンロードして、作成したフォルダに展開してください。
+
+https://github.com/led-mirage/ZundaGPT/releases/tag/v0.1.0
+
+#### 3. 実行
+
+VOICEVOX を起動したのち、ZundaGPT.exeをダブルクリックすればアプリが起動します。
+
+### 🛩️ Pythonで実行する場合
+
+#### 1. プロジェクト用のフォルダの作成
+
+任意の場所にプロジェクト用のフォルダを作成してください。
+
+#### 2. ターミナルの起動
+
+ターミナルかコマンドプロンプトを起動して、作成したプロジェクトフォルダに移動します。
+
+#### 3. ソースファイルのダウンロード
+
+ZIPファイルをダウンロードして作成したフォルダに展開してください。  
+または、Gitが使える方は以下のコマンドを実行してクローンしてもOKです。
+
+```bash
+git clone https://github.com/led-mirage/ZundaGPT.git
+```
+
+#### 4. ライブラリのインストール
+
+以下のコマンドを実行して必要なライブラリをインストールします。
+
+```bash
+pip install -r requirements.txt
+```
+
+#### 5. 実行
+
+VOICEVOX を起動したのち、以下のコマンドを実行するとアプリが起動します。
+
+```bash
+python main.py
+```
+
 ## 設定
 
 ### ⚙️ OSの環境変数
