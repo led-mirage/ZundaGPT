@@ -15,6 +15,17 @@ class VoicevoxAPI:
     DEFAULT_SERVER = "http://127.0.0.1:50021"
     server = DEFAULT_SERVER
 
+    # バージョンを取得する
+    @classmethod
+    def get_version(cls):
+        try:
+            response = requests.get(f"{VoicevoxAPI.server}/version")
+            response.raise_for_status()
+            return response.json()
+        except Exception as err:
+            print(err)
+            return None
+
     # 話者リストを取得する
     @classmethod
     def get_speakers(cls):

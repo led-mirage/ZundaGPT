@@ -7,29 +7,47 @@
 # ライセンスの詳細については、このプロジェクトのLICENSEファイルを参照してください。
 
 import json
+import os
 import threading
 
 from voicevox_api import VoicevoxAPI
 
 class Settings:
+    FILE_VER = 2
+
     def __init__(self, setting_file_path):
         self._setting_file_path = setting_file_path
         self._lock = threading.Lock()
         self._init_member()
 
     def _init_member(self):
-        self._speaker_id = 3
+        self._speaker_id = 3    # ずんだもん
+        self._echo = True
         self._speed_scale = 1.2
         self._pitch_scale = 0.0
+        self._user_echo = True
+        self._user_speaker_id = 13    # 青山龍星
+        self._user_speed_scale = 1.2
+        self._user_pitch_scale = 0.0
         self._voicevox_server = VoicevoxAPI.DEFAULT_SERVER
         self._chat_api = "OpenAI"
         self._chat_model = "gpt-3.5-turbo-1106"
         self._chat_character_name = "ずんだ"
-        self._chat_instruction = "君は優秀なアシスタント。ずんだもんの話し方で話す。具体的には語尾に「のだ」または「なのだ｜をつけ自然に話す。回答は１００文字以内で簡潔に行う。"
+        self._chat_instruction = "君は優秀なアシスタント。ずんだもんの話し方で話す。具体的には語尾に「のだ」または「なのだ」をつけて自然に話す。回答は１００文字以内で簡潔に行う。"
         self._chat_bad_response = "答えられないのだ"
         self._chat_history_size = 6
+        self._chat_log_folder = "log"
 
-    # 話者ID
+    # 発話するか（アシスタント）
+    def get_echo_enable(self):
+        with self._lock:
+            return self._echo
+
+    def set_echo_enable(self, enable):
+        with self._lock:
+            self._echo = enable
+
+    # 話者ID（アシスタント）
     def get_speaker_id(self):
         with self._lock:
             return self._speaker_id
@@ -38,7 +56,7 @@ class Settings:
         with self._lock:
             self._speaker_id = speaker_id
 
-    # 読み上げスピード
+    # 読み上げスピード（アシスタント）
     def get_speed_scale(self):
         with self._lock:
             return self._speed_scale
@@ -47,7 +65,7 @@ class Settings:
         with self._lock:
             self._speed_scale = speed_scale
 
-    # 声の高さ
+    # 声の高さ（アシスタント）
     def get_pitch_scale(self):
         with self._lock:
             return self._pitch_scale
@@ -55,6 +73,42 @@ class Settings:
     def set_pitch_scale(self, pitch_scale):
         with self._lock:
             self._pitch_scale = pitch_scale
+
+    # 発話するか（ユーザー）
+    def get_user_echo_enable(self):
+        with self._lock:
+            return self._user_echo
+
+    def set_user_echo_enable(self, enable):
+        with self._lock:
+            self._user_echo = enable
+
+    # 話者ID（ユーザー）
+    def get_user_speaker_id(self):
+        with self._lock:
+            return self._user_speaker_id
+
+    def set_user_speaker_id(self, speaker_id):
+        with self._lock:
+            self._user_speaker_id = speaker_id
+
+    # 読み上げスピード（ユーザー）
+    def get_user_speed_scale(self):
+        with self._lock:
+            return self._user_speed_scale
+
+    def set_user_speed_scale(self, speed_scale):
+        with self._lock:
+            self._user_speed_scale = speed_scale
+
+    # 声の高さ（ユーザー）
+    def get_user_pitch_scale(self):
+        with self._lock:
+            return self._user_pitch_scale
+
+    def set_user_pitch_scale(self, pitch_scale):
+        with self._lock:
+            self._user_pitch_scale = pitch_scale
 
     # VOICEVOX サーバーのURL
     def get_voicevox_server(self):
@@ -119,6 +173,15 @@ class Settings:
         with self._lock:
             self._chat_history_size = chat_history_size
 
+    # チャットのログを保存するフォルダ
+    def get_chat_log_folder(self):
+        with self._lock:
+            return self._chat_log_folder
+        
+    def set_chat_log_folder(self, chat_log_folder):
+        with self._lock:
+            self._chat_log_folder = chat_log_folder
+
     # 設定ファイルを保存する
     def save(self):
         with self._lock:
@@ -127,33 +190,54 @@ class Settings:
     def _save_nolock(self):
         with open(self._setting_file_path, "w", encoding="utf-8") as file:
             setting = {}
+            setting["file_ver"] = Settings.FILE_VER
+            setting["echo"] = self._echo
             setting["speaker_id"] = self._speaker_id
             setting["speed_scale"] = self._speed_scale
             setting["pitch_scale"] = self._pitch_scale
+            setting["user_echo"] = self._user_echo
+            setting["user_speaker_id"] = self._user_speaker_id
+            setting["user_speed_scale"] = self._user_speed_scale
+            setting["user_pitch_scale"] = self._user_pitch_scale
             setting["voicevox_server"] = self._voicevox_server
             setting["chat_api"] = self._chat_api
             setting["chat_model"] = self._chat_model
             setting["chat_character_name"] = self._chat_character_name
             setting["chat_instruction"] = self._chat_instruction
             setting["chat_bad_response"] = self._chat_bad_response
+            setting["chat_history_size"] = self._chat_history_size
+            setting["chat_log_folder"] = self._chat_log_folder
             json.dump(setting, file, ensure_ascii=False, indent=4)
 
     # 設定ファイルを読み込む
     def load(self):
+        if not os.path.exists(self._setting_file_path):
+            self._init_member()
+            self._save_nolock()
+            return
+
         with self._lock:
-            try:
-                with open(self._setting_file_path, "r", encoding="utf-8") as file:
-                    setting = json.load(file)
-                    self._speaker_id = setting["speaker_id"]
-                    self._speed_scale = setting["speed_scale"]
-                    self._pitch_scale = setting["pitch_scale"]
-                    self._voicevox_server = setting["voicevox_server"]
-                    self._chat_api = setting["chat_api"]
-                    self._chat_model = setting["chat_model"]
-                    self._chat_character_name = setting["chat_character_name"]
-                    self._chat_instruction = setting["chat_instruction"]
-                    self._chat_bad_response = setting["chat_bad_response"]
-                return setting
-            except Exception as err:
-                self._init_member()
-                self._save_nolock()
+            with open(self._setting_file_path, "r", encoding="utf-8") as file:
+                setting = json.load(file)
+                file_ver = setting.get("file_ver", 1)
+                self._echo = setting.get("echo", self._echo)
+                self._speaker_id = setting.get("speaker_id", self._speaker_id)
+                self._speed_scale = setting.get("speed_scale", self._speed_scale)
+                self._pitch_scale = setting.get("pitch_scale", self._pitch_scale)
+                self._user_echo = setting.get("user_echo", self._user_echo)
+                self._user_speaker_id = setting.get("user_speaker_id", self._user_speaker_id)
+                self._user_speed_scale = setting.get("user_speed_scale", self._user_speed_scale)
+                self._user_pitch_scale = setting.get("user_pitch_scale", self._user_pitch_scale)
+                self._voicevox_server = setting.get("voicevox_server", self._voicevox_server)
+                self._chat_api = setting.get("chat_api", self._chat_api)
+                self._chat_model = setting.get("chat_model", self._chat_model)
+                self._chat_character_name = setting.get("chat_character_name", self._chat_character_name)
+                self._chat_instruction = setting.get("chat_instruction", self._chat_instruction)
+                self._chat_bad_response = setting.get("chat_bad_response", self._chat_bad_response)
+                self._chat_history_size = setting.get("chat_history_size", self._chat_history_size)
+                self._chat_log_folder = setting.get("chat_log_folder", self._chat_log_folder)
+
+        if file_ver < Settings.FILE_VER:
+            self._save_nolock()
+
+        return setting
