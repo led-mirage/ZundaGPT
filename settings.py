@@ -10,10 +10,11 @@ import json
 import os
 import threading
 
+import voicevox
 from voicevox_api import VoicevoxAPI
 
 class Settings:
-    FILE_VER = 2
+    FILE_VER = 3
 
     def __init__(self, setting_file_path):
         self._setting_file_path = setting_file_path
@@ -37,6 +38,8 @@ class Settings:
         self._chat_bad_response = "答えられないのだ"
         self._chat_history_size = 6
         self._chat_log_folder = "log"
+        self._voicevox_autorun = True
+        self._voicevox_path = voicevox.get_default_voicevox_install_path()
 
     # 発話するか（アシスタント）
     def get_echo_enable(self):
@@ -182,6 +185,24 @@ class Settings:
         with self._lock:
             self._chat_log_folder = chat_log_folder
 
+    # VOICEVOX自動実行
+    def get_voicevox_autorun(self):
+        with self._lock:
+            return self._voicevox_autorun
+        
+    def set_voicevox_autorun(self, autorun):
+        with self._lock:
+            self._voicevox_autorun = autorun
+
+    # VOICEVOXインストールパス
+    def get_voicevox_path(self):
+        with self._lock:
+            return self._voicevox_path
+        
+    def set_voicevox_path(self, path):
+        with self._lock:
+            self._voicevox_path = path
+
     # 設定ファイルを保存する
     def save(self):
         with self._lock:
@@ -207,6 +228,8 @@ class Settings:
             setting["chat_bad_response"] = self._chat_bad_response
             setting["chat_history_size"] = self._chat_history_size
             setting["chat_log_folder"] = self._chat_log_folder
+            setting["voicevox_autorun"] = self._voicevox_autorun
+            setting["voicevox_path"] = self._voicevox_path
             json.dump(setting, file, ensure_ascii=False, indent=4)
 
     # 設定ファイルを読み込む
@@ -236,6 +259,8 @@ class Settings:
                 self._chat_bad_response = setting.get("chat_bad_response", self._chat_bad_response)
                 self._chat_history_size = setting.get("chat_history_size", self._chat_history_size)
                 self._chat_log_folder = setting.get("chat_log_folder", self._chat_log_folder)
+                self._voicevox_autorun = setting.get("voicevox_autorun", self._voicevox_autorun)
+                self._voicevox_path = setting.get("voicevox_path", self._voicevox_path)
 
         if file_ver < Settings.FILE_VER:
             self._save_nolock()

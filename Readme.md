@@ -46,32 +46,32 @@ VOICEVOX Engine … https://github.com/VOICEVOX/voicevox_engine
 
 #### 1. プロジェクト用のフォルダの作成
 
-任意の場所にプロジェクト用のフォルダを作成してください。
+任意の場所にプロジェクト用のフォルダを作成するのだ。
 
 #### 2. アプリのダウンロード
 
-以下のリンクから ZundaGPT.ZIP をダウンロードして、作成したフォルダに展開してください。
+以下のリンクから ZundaGPT.ZIP をダウンロードして、作成したフォルダに展開するのだ。
 
-https://github.com/led-mirage/ZundaGPT/releases/tag/v0.2.0
+https://github.com/led-mirage/ZundaGPT/releases/tag/v0.3.0
 
 #### 3. 実行
 
-VOICEVOX を起動したのち、ZundaGPT.exeをダブルクリックすればアプリが起動します。
+VOICEVOX を起動したのち、ZundaGPT.exeをダブルクリックすればアプリが起動するのだ。
 
 ### 🛩️ Pythonで実行する場合
 
 #### 1. プロジェクト用のフォルダの作成
 
-任意の場所にプロジェクト用のフォルダを作成してください。
+任意の場所にプロジェクト用のフォルダを作成するのだ。
 
 #### 2. ターミナルの起動
 
-ターミナルかコマンドプロンプトを起動して、作成したプロジェクトフォルダに移動します。
+ターミナルかコマンドプロンプトを起動して、作成したプロジェクトフォルダに移動するのだ。
 
 #### 3. ソースファイルのダウンロード
 
-ZIPファイルをダウンロードして作成したフォルダに展開してください。  
-または、Gitが使える方は以下のコマンドを実行してクローンしてもOKです。
+ZIPファイルをダウンロードして作成したフォルダに展開するのだ。  
+または、Gitが使える方は以下のコマンドを実行してクローンしてもOKなのだ。
 
 ```bash
 git clone https://github.com/led-mirage/ZundaGPT.git
@@ -79,7 +79,7 @@ git clone https://github.com/led-mirage/ZundaGPT.git
 
 #### 4. ライブラリのインストール
 
-以下のコマンドを実行して必要なライブラリをインストールします。
+以下のコマンドを実行して必要なライブラリをインストールするのだ。
 
 ```bash
 pip install -r requirements.txt
@@ -87,7 +87,7 @@ pip install -r requirements.txt
 
 #### 5. 実行
 
-VOICEVOX を起動したのち、以下のコマンドを実行するとアプリが起動します。
+VOICEVOX を起動したのち、以下のコマンドを実行するとアプリが起動するのだ。
 
 ```bash
 python main.py
@@ -203,6 +203,14 @@ AIに送信する過去の会話の履歴数を設定するのだ。この値が
 
 チャットのログファイルを保存するフォルダを指定するのだ。この値が空文字の場合はログは保存されないのだ。
 
+#### ✨ voicevox_autorun（既定値 true）v0.3.0から新設
+
+ZundaGTP起動時にVOICEVOXを自動的に起動するかどうかを指定するのだ。この値がTrueだと自動起動するのだ。
+
+#### ✨ voicevox_path（既定値 %LOCALAPPDATA%/Programs/VOICEVOX/VOICEVOX.exe）v0.3.0から新設
+
+VOICEVOXの実行ファイルのパスを記載するのだ。この項目がない場合は、VOICEVOXのWindowsへの既定のインストール先が使われるのだ。
+
 ## 出力ファイル
 
 ### 🗒️ チャットログファイル
@@ -256,6 +264,11 @@ WindowsのIME設定で「以前のバージョンのMicrosoft IMEを使う」と
 ホームページ： https://people.csail.mit.edu/hubert/pyaudio/  
 ライセンス：MIT License
 
+### 🔖 psutil 5.9.7
+
+ホームページ：https://psutil.readthedocs.io/en/latest/#  
+ライセンス：BSD 3-Clause License
+
 ## ライセンス
 
 © 2023 led-mirage
@@ -274,6 +287,10 @@ WindowsのIME設定で「以前のバージョンのMicrosoft IMEを使う」と
 - ユーザー（あなた）のメッセージを読み上げる機能を追加
 - 設定用のコマンドを追加
 - chat_history_sizeが効かないバグを修正
+
+### 0.3.0 (2023/12/24)
+
+- VOICEVOX自動起動機能を追加
 
 ## さいごに
 

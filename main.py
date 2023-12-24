@@ -13,13 +13,14 @@ import wave
 import openai
 import pyaudio
 
+import voicevox
 from chat import ChatFactory
 from monthly_usage import MonthlyUsage
 from settings import Settings
 from voicevox_api import VoicevoxAPI
 
 APP_NAME = "ずんだGPT"
-APP_VERSION = "0.2.0"
+APP_VERSION = "0.3.0"
 COPYRIGHT = "Copyright 2023 led-mirage"
 SETTING_FILE = "settings.json"
 MONTHLY_USAGE_FILE = "monthly_token_usage.json"
@@ -31,6 +32,9 @@ def main():
     settings = Settings(SETTING_FILE)
     settings.load()
     VoicevoxAPI.server = settings.get_voicevox_server()
+
+    if settings.get_voicevox_autorun():
+        voicevox.run_voicevox(settings.get_voicevox_path())
 
     try:
         chat = ChatFactory.create(
