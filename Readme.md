@@ -52,7 +52,7 @@ VOICEVOX Engine … https://github.com/VOICEVOX/voicevox_engine
 
 以下のリンクから ZundaGPT.ZIP をダウンロードして、作成したフォルダに展開するのだ。
 
-https://github.com/led-mirage/ZundaGPT/releases/tag/v0.3.0
+https://github.com/led-mirage/ZundaGPT/releases/tag/v0.3.1
 
 #### 3. 実行
 
@@ -291,6 +291,10 @@ WindowsのIME設定で「以前のバージョンのMicrosoft IMEを使う」と
 ### 0.3.0 (2023/12/24)
 
 - VOICEVOX自動起動機能を追加
+
+### 0.3.1 (2023/12/24)
+
+- バグ修正（ユーザーのメッセージを読み上げるタイミングを変更）
 
 ## さいごに
 

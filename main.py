@@ -20,7 +20,7 @@ from settings import Settings
 from voicevox_api import VoicevoxAPI
 
 APP_NAME = "ずんだGPT"
-APP_VERSION = "0.3.0"
+APP_VERSION = "0.3.1"
 COPYRIGHT = "Copyright 2023 led-mirage"
 SETTING_FILE = "settings.json"
 MONTHLY_USAGE_FILE = "monthly_token_usage.json"
@@ -60,6 +60,15 @@ def main():
 
         print()
 
+        if settings.get_user_echo_enable():
+            try:
+                text_to_speech(message,
+                        settings.get_user_speaker_id(),
+                        settings.get_user_speed_scale(),
+                        settings.get_user_pitch_scale())
+            except:
+                pass
+
         try:
             response, tokens = chat.send_message(message)
         except openai.AuthenticationError as err:
@@ -70,15 +79,6 @@ def main():
             print("デプロイメントが見つかりません")
             print(err.message)
             sys.exit()
-
-        if settings.get_user_echo_enable():
-            try:
-                text_to_speech(message,
-                        settings.get_user_speaker_id(),
-                        settings.get_user_speed_scale(),
-                        settings.get_user_pitch_scale())
-            except:
-                pass
 
         monthly_usage.add_token(tokens)
 
