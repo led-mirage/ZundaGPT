@@ -16,8 +16,8 @@ class VoicevoxAPI:
     server = DEFAULT_SERVER
 
     # バージョンを取得する
-    @classmethod
-    def get_version(cls):
+    @staticmethod
+    def get_version():
         try:
             response = requests.get(f"{VoicevoxAPI.server}/version")
             response.raise_for_status()
@@ -27,8 +27,8 @@ class VoicevoxAPI:
             return None
 
     # 話者リストを取得する
-    @classmethod
-    def get_speakers(cls):
+    @staticmethod
+    def get_speakers():
         try:
             response = requests.get(f"{VoicevoxAPI.server}/speakers")
             response.raise_for_status()
@@ -44,16 +44,16 @@ class VoicevoxAPI:
             return None
         
     # テキストの読み上げ用データを取得する
-    @classmethod
-    def audio_query(cls, text, speaker_id):
+    @staticmethod
+    def audio_query(text, speaker_id):
         post_params = {"text": text, "speaker": speaker_id}
         response = requests.post(f"{VoicevoxAPI.server}/audio_query", params=post_params)
         response.raise_for_status()
         return response.json()
 
     # 音声データを生成する
-    @classmethod
-    def synthesis(cls, query_json, speaker_id):
+    @staticmethod
+    def synthesis(query_json, speaker_id):
         post_params = {"speaker": speaker_id}
         response = requests.post(f"{VoicevoxAPI.server}/synthesis", params=post_params, data=json.dumps(query_json))
         response.raise_for_status()

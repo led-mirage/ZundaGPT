@@ -10,11 +10,10 @@ import json
 import os
 import threading
 
-import voicevox
 from voicevox_api import VoicevoxAPI
 
 class Settings:
-    FILE_VER = 3
+    FILE_VER = 4
 
     def __init__(self, setting_file_path):
         self._setting_file_path = setting_file_path
@@ -22,15 +21,16 @@ class Settings:
         self._init_member()
 
     def _init_member(self):
-        self._speaker_id = 3    # ずんだもん
-        self._echo = True
-        self._speed_scale = 1.2
-        self._pitch_scale = 0.0
+        self._assistant_echo = True
+        self._assistant_tts_software = "VOICEVOX"
+        self._assistant_speaker_id = "3"    # ずんだもん
+        self._assistant_speed_scale = 1.2
+        self._assistant_pitch_scale = 0.0
         self._user_echo = True
-        self._user_speaker_id = 13    # 青山龍星
+        self._user_tts_software = "VOICEVOX"
+        self._user_speaker_id = "13"    # 青山龍星
         self._user_speed_scale = 1.2
         self._user_pitch_scale = 0.0
-        self._voicevox_server = VoicevoxAPI.DEFAULT_SERVER
         self._chat_api = "OpenAI"
         self._chat_model = "gpt-3.5-turbo-1106"
         self._chat_character_name = "ずんだ"
@@ -38,44 +38,56 @@ class Settings:
         self._chat_bad_response = "答えられないのだ"
         self._chat_history_size = 6
         self._chat_log_folder = "log"
-        self._voicevox_autorun = True
-        self._voicevox_path = voicevox.get_default_voicevox_install_path()
+        self._voicevox_server = VoicevoxAPI.DEFAULT_SERVER
+        from character import CharacterVoicevox
+        self._voicevox_path = CharacterVoicevox.DEFAULT_INSTALL_PATH
+        from character import CharacterAIVoice
+        self._aivoice_path = CharacterAIVoice.DEFAULT_INSTALL_PATH
 
     # 発話するか（アシスタント）
-    def get_echo_enable(self):
+    def get_assistant_echo_enable(self):
         with self._lock:
-            return self._echo
+            return self._assistant_echo
 
-    def set_echo_enable(self, enable):
+    def set_assistant_echo_enable(self, enable):
         with self._lock:
-            self._echo = enable
+            self._assistant_echo = enable
+
+    # 使用する読み上げソフト（アシスタント）
+    def get_assistant_tts_software(self):
+        with self._lock:
+            return self._assistant_tts_software
+
+    def set_assistant_tts_software(self, software):
+        with self._lock:
+            self._assistant_tts_software = software
 
     # 話者ID（アシスタント）
-    def get_speaker_id(self):
+    def get_assistant_speaker_id(self):
         with self._lock:
-            return self._speaker_id
+            return self._assistant_speaker_id
 
-    def set_speaker_id(self, speaker_id):
+    def set_assistant_speaker_id(self, speaker_id):
         with self._lock:
-            self._speaker_id = speaker_id
+            self._assistant_speaker_id = speaker_id
 
     # 読み上げスピード（アシスタント）
-    def get_speed_scale(self):
+    def get_assistant_speed_scale(self):
         with self._lock:
-            return self._speed_scale
+            return self._assistant_speed_scale
 
-    def set_speed_scale(self, speed_scale):
+    def set_assistant_speed_scale(self, speed_scale):
         with self._lock:
-            self._speed_scale = speed_scale
+            self._assistant_speed_scale = speed_scale
 
     # 声の高さ（アシスタント）
-    def get_pitch_scale(self):
+    def get_assistant_pitch_scale(self):
         with self._lock:
-            return self._pitch_scale
+            return self._assistant_pitch_scale
 
-    def set_pitch_scale(self, pitch_scale):
+    def set_assistant_pitch_scale(self, pitch_scale):
         with self._lock:
-            self._pitch_scale = pitch_scale
+            self._assistant_pitch_scale = pitch_scale
 
     # 発話するか（ユーザー）
     def get_user_echo_enable(self):
@@ -85,6 +97,15 @@ class Settings:
     def set_user_echo_enable(self, enable):
         with self._lock:
             self._user_echo = enable
+
+    # 使用する読み上げソフト（ユーザー）
+    def get_user_tts_software(self):
+        with self._lock:
+            return self._user_tts_software
+
+    def set_user_tts_software(self, software):
+        with self._lock:
+            self._user_tts_software = software
 
     # 話者ID（ユーザー）
     def get_user_speaker_id(self):
@@ -112,15 +133,6 @@ class Settings:
     def set_user_pitch_scale(self, pitch_scale):
         with self._lock:
             self._user_pitch_scale = pitch_scale
-
-    # VOICEVOX サーバーのURL
-    def get_voicevox_server(self):
-        with self._lock:
-            return self._voicevox_server
-    
-    def set_voicevox_server(self, voicevox_server):
-        with self._lock:
-            self._voicevox_server = voicevox_server
 
     # チャットエージェントのモデル
     def get_chat_api(self):
@@ -185,14 +197,14 @@ class Settings:
         with self._lock:
             self._chat_log_folder = chat_log_folder
 
-    # VOICEVOX自動実行
-    def get_voicevox_autorun(self):
+    # VOICEVOX サーバーのURL
+    def get_voicevox_server(self):
         with self._lock:
-            return self._voicevox_autorun
-        
-    def set_voicevox_autorun(self, autorun):
+            return self._voicevox_server
+    
+    def set_voicevox_server(self, voicevox_server):
         with self._lock:
-            self._voicevox_autorun = autorun
+            self._voicevox_server = voicevox_server
 
     # VOICEVOXインストールパス
     def get_voicevox_path(self):
@@ -203,6 +215,15 @@ class Settings:
         with self._lock:
             self._voicevox_path = path
 
+    # A.I.VOICEインストールパス
+    def get_aivoice_path(self):
+        with self._lock:
+            return self._aivoice_path
+        
+    def set_aivoice_path(self, path):
+        with self._lock:
+            self._aivoice_path = path
+
     # 設定ファイルを保存する
     def save(self):
         with self._lock:
@@ -212,15 +233,16 @@ class Settings:
         with open(self._setting_file_path, "w", encoding="utf-8") as file:
             setting = {}
             setting["file_ver"] = Settings.FILE_VER
-            setting["echo"] = self._echo
-            setting["speaker_id"] = self._speaker_id
-            setting["speed_scale"] = self._speed_scale
-            setting["pitch_scale"] = self._pitch_scale
+            setting["assistant_echo"] = self._assistant_echo
+            setting["assistant_tts_software"] = self._assistant_tts_software
+            setting["assistant_speaker_id"] = self._assistant_speaker_id
+            setting["assistant_speed_scale"] = self._assistant_speed_scale
+            setting["assistant_pitch_scale"] = self._assistant_pitch_scale
             setting["user_echo"] = self._user_echo
+            setting["user_tts_software"] = self._user_tts_software
             setting["user_speaker_id"] = self._user_speaker_id
             setting["user_speed_scale"] = self._user_speed_scale
             setting["user_pitch_scale"] = self._user_pitch_scale
-            setting["voicevox_server"] = self._voicevox_server
             setting["chat_api"] = self._chat_api
             setting["chat_model"] = self._chat_model
             setting["chat_character_name"] = self._chat_character_name
@@ -228,8 +250,9 @@ class Settings:
             setting["chat_bad_response"] = self._chat_bad_response
             setting["chat_history_size"] = self._chat_history_size
             setting["chat_log_folder"] = self._chat_log_folder
-            setting["voicevox_autorun"] = self._voicevox_autorun
+            setting["voicevox_server"] = self._voicevox_server
             setting["voicevox_path"] = self._voicevox_path
+            setting["aivoice_path"] = self._aivoice_path
             json.dump(setting, file, ensure_ascii=False, indent=4)
 
     # 設定ファイルを読み込む
@@ -243,15 +266,16 @@ class Settings:
             with open(self._setting_file_path, "r", encoding="utf-8") as file:
                 setting = json.load(file)
                 file_ver = setting.get("file_ver", 1)
-                self._echo = setting.get("echo", self._echo)
-                self._speaker_id = setting.get("speaker_id", self._speaker_id)
-                self._speed_scale = setting.get("speed_scale", self._speed_scale)
-                self._pitch_scale = setting.get("pitch_scale", self._pitch_scale)
+                self._assistant_echo = setting.get("assistant_echo", self._assistant_echo)
+                self._assistant_tts_software = setting.get("assistant_tts_software", self._assistant_tts_software)
+                self._assistant_speaker_id = setting.get("assistant_speaker_id", self._assistant_speaker_id)
+                self._assistant_speed_scale = setting.get("assistant_speed_scale", self._assistant_speed_scale)
+                self._assistant_pitch_scale = setting.get("assistant_pitch_scale", self._assistant_pitch_scale)
                 self._user_echo = setting.get("user_echo", self._user_echo)
+                self._user_tts_software = setting.get("user_tts_software", self._user_tts_software)
                 self._user_speaker_id = setting.get("user_speaker_id", self._user_speaker_id)
                 self._user_speed_scale = setting.get("user_speed_scale", self._user_speed_scale)
                 self._user_pitch_scale = setting.get("user_pitch_scale", self._user_pitch_scale)
-                self._voicevox_server = setting.get("voicevox_server", self._voicevox_server)
                 self._chat_api = setting.get("chat_api", self._chat_api)
                 self._chat_model = setting.get("chat_model", self._chat_model)
                 self._chat_character_name = setting.get("chat_character_name", self._chat_character_name)
@@ -259,8 +283,9 @@ class Settings:
                 self._chat_bad_response = setting.get("chat_bad_response", self._chat_bad_response)
                 self._chat_history_size = setting.get("chat_history_size", self._chat_history_size)
                 self._chat_log_folder = setting.get("chat_log_folder", self._chat_log_folder)
-                self._voicevox_autorun = setting.get("voicevox_autorun", self._voicevox_autorun)
+                self._voicevox_server = setting.get("voicevox_server", self._voicevox_server)
                 self._voicevox_path = setting.get("voicevox_path", self._voicevox_path)
+                self._aivoice_path = setting.get("aivoice_path", self._aivoice_path)
 
         if file_ver < Settings.FILE_VER:
             self._save_nolock()

@@ -1,14 +1,15 @@
 {
-    "file_ver": 3,
-    "echo": true,
-    "speaker_id": 3,
-    "speed_scale": 1.2,
-    "pitch_scale": 0.0,
+    "file_ver": 4,
+    "assistant_echo": true,
+    "assistant_tts_software": "VOICEVOX",
+    "assistant_speaker_id": "3",
+    "assistant_speed_scale": 1.2,
+    "assistant_pitch_scale": 0.0,
     "user_echo": true,
-    "user_speaker_id": 13,
+    "user_tts_software": "VOICEVOX",
+    "user_speaker_id": "13",
     "user_speed_scale": 1.2,
     "user_pitch_scale": 0.0,
-    "voicevox_server": "http://127.0.0.1:50021",
     "chat_api": "OpenAI",
     "chat_model": "gpt-3.5-turbo-1106",
     "chat_character_name": "ずんだ",
@@ -16,6 +17,7 @@
     "chat_bad_response": "答えられないのだ",
     "chat_history_size": 6,
     "chat_log_folder": "log",
-    "voicevox_autorun": true,
-    "voicevox_path": "%LOCALAPPDATA%/Programs/VOICEVOX/VOICEVOX.exe"
+    "voicevox_server": "http://127.0.0.1:50021",
+    "voicevox_path": "%LOCALAPPDATA%/Programs/VOICEVOX/VOICEVOX.exe",
+    "aivoice_path": "%ProgramW6432%/AI/AIVoice/AIVoiceEditor/AI.Talk.Editor.Api.dll"
 }

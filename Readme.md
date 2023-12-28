@@ -6,6 +6,8 @@ Copyright (c) 2023 led-mirage
 
 ずんだもんとチャットするアプリなのだ。ずんだもんの声で答えてくれるのが特徴なのだ。
 
+v0.4.0からA.I.VOICEにも対応したのだ！
+
 ## スクリーンショット
 
 https://github.com/led-mirage/ZundaGPT/assets/139528700/63c6e9bb-d86b-454b-a972-b7ef55496af8
@@ -16,6 +18,7 @@ https://github.com/led-mirage/ZundaGPT/assets/139528700/63c6e9bb-d86b-454b-a972-
 - Python 3.12.0
 - VOICEVOX 0.14.10
 - VOICEVOX ENGINE 0.14.6
+- A.I.VOICE Editor 1.4.9.0
 
 ## 必要なもの
 
@@ -31,7 +34,7 @@ OpenAI … https://platform.openai.com/
 
 ### ✅ VOICEVOX
 
-ずんだもんの声でチャットを読み上げてもらうにはVOICEVOXを起動しておく必要があるのだ。VOICEVOXは公式サイトからダウンロードして簡単にインストールできるのだ。
+ずんだもんの声でチャットを読み上げてもらうにはVOICEVOXをインストールしておく必要があるのだ。VOICEVOXは公式サイトからダウンロードして簡単にインストールできるのだ。
 
 VOICEVOXのユーザーインターフェイスが不要な人は、VOICEVOX Engineを利用することもできるのだ。少し玄人向けなので、分からない人は素直にVOICEVOXを利用するのがお勧めなのだ。
 
@@ -39,6 +42,12 @@ VOICEVOXのユーザーインターフェイスが不要な人は、VOICEVOX Eng
 
 VOICEVOX … https://voicevox.hiroshiba.jp/  
 VOICEVOX Engine … https://github.com/VOICEVOX/voicevox_engine
+
+### ✅ A.I.VOICE（オプション）
+
+A.I.VOICEで話してもらうにはA.I.VOICEを購入してインストールしておく必要があるのだ。購入方法、インストール方法などは公式ページを見て欲しいのだ。もうすでに持っている人は使ってみて欲しいのだ。
+
+A.I.VOICE … https://aivoice.jp/
 
 ## 実行方法
 
@@ -52,7 +61,7 @@ VOICEVOX Engine … https://github.com/VOICEVOX/voicevox_engine
 
 以下のリンクから ZundaGPT.ZIP をダウンロードして、作成したフォルダに展開するのだ。
 
-https://github.com/led-mirage/ZundaGPT/releases/tag/v0.3.1
+https://github.com/led-mirage/ZundaGPT/releases/tag/v0.4.0
 
 #### 3. 実行
 
@@ -109,57 +118,65 @@ Windowsの場合は、Windowsの検索窓で「環境変数を編集」で検索
 
 `settings.json`ファイルにはこのアプリの設定情報が記載されているのだ。普通は特に変更する必要はないけど、自分用にカスタマイズしたい人は、このファイルをいじるといいのだ。以下に設定項目を簡単に紹介するのだ。
 
-#### ✨ echo（既定値 true）v0.2.0から新設
+#### ✨ assistant_echo（既定値 true）v0.2.0から新設
 
-声に出して読み上げるかどうかの設定なのだ。設定できる値は`true`か`false`の２つなのだ。
+チャットアシスタントが声に出して読み上げるかどうかの設定なのだ。設定できる値は`true`か`false`の２つなのだ。
 
-`@echo [ on | off ]`コマンドで設定可能なのだ。
+※旧名 echo … v0.4.0から変更
 
-#### ✨ speaker_id（既定値 3）
+#### ✨ assistant_tts_software（既定値 VOICEVOX）v0.4.0から新設
 
-声のIDなのだ。3はずんだもんを意味しているのだ。VOICEVOXに収録されている他のキャラクターの声で話して欲しいときは、この値を変更すればいいのだ。キャラクターのIDを調べるには、[この資料](voicevox_speaker_list.md)を参考にするといいのだ。
+チャットアシスタントのテキスト読み上げに使用するソフトウェアを選択するのだ。設定できる値は、"VOICEVOX"か"AIVOICE"、もしくはテキストを読み上げない場合に使用する""の３つなのだ。
 
-`@speaker_id [数値]`コマンドで設定可能なのだ。
+#### ✨ assistant_speaker_id（既定値 3）
 
-#### ✨ speed_scale（既定値 1.2）
+チャットアシスタントの声のIDなのだ。VOICEVOXの場合、"3"はずんだもんを意味しているのだ。VOICEVOXに収録されている他のキャラクターの声で話して欲しいときは、この値を変更すればいいのだ。キャラクターのIDを調べるには、[この資料](voicevox_speaker_list.md)を参考にするといいのだ。
 
-読み上げの速さの設定なのだ。VOICEVOXのデフォルトは1.0なんだけど、ボクは少し早く読み上げさせたかったので1.2としているのだ。遅くしたい場合はこの値を減らせばいいのだ。
+A.I.VOICEの場合、ここにはキャラクターの名前かプリセットの名前を設定すればいいのだ。例えば、"琴葉 茜"とかを設定すればいいのだ。
 
-`@speaker_scale [数値]`コマンドで設定可能なのだ。
+※旧名 speaker_id … v0.4.0から変更
 
-#### ✨ pitch_scale（既定値 0.0）
+#### ✨ assistant_speed_scale（既定値 1.2）
 
-声の高さの設定なのだ。この値を増やすと、声の高さが上がるのだ。ただ、少しの変化で大きく変わるので、0.1とか0.2とか小刻みに調整するといいのだ。
+チャットアシスタントの読み上げの速さの設定なのだ。VOICEVOXのデフォルトは1.0なんだけど、ボクは少し早く読み上げさせたかったので1.2としているのだ。遅くしたい場合はこの値を減らせばいいのだ。
 
-`@pitch_scale [数値]`コマンドで設定可能なのだ。
+A.I.VOICEの場合、この設定は無効なのだ。読み上げ方はA.I.VOICE Editor側のプリセットで調整して欲しいのだ。
+
+※旧名 speed_scale … v0.4.0から変更
+
+#### ✨ assistant_pitch_scale（既定値 0.0）
+
+チャットアシスタントの声の高さの設定なのだ。この値を増やすと、声の高さが上がるのだ。ただ、少しの変化で大きく変わるので、0.1とか0.2とか小刻みに調整するといいのだ。
+
+A.I.VOICEの場合、この設定は無効なのだ。読み上げ方はA.I.VOICE Editor側のプリセットで調整して欲しいのだ。
+
+※旧名 pitch_scale … v0.4.0から変更
 
 #### ✨ user_echo（既定値 true）v0.2.0から新設
 
 あなたのメッセージを声に出して読み上げるかどうかの設定なのだ。設定できる値は`true`か`false`の２つなのだ。
 
-`@user_echo [ on | off ]`コマンドで設定可能なのだ。
+#### ✨ user_tts_software（既定値 VOICEVOX）v0.4.0から新設
+
+あなたのメッセージのテキスト読み上げに使用するソフトウェアを選択するのだ。設定できる値は、"VOICEVOX"か"AIVOICE"、もしくはテキストを読み上げない場合に使用する""の３つなのだ。
 
 #### ✨ user_speaker_id（既定値 13）v0.2.0から新設
 
-あなたの声のIDなのだ。13は青山龍星を意味しているのだ。VOICEVOXに収録されている他のキャラクターの声で話して欲しいときは、この値を変更すればいいのだ。キャラクターのIDを調べるには、[この資料](voicevox_speaker_list.md)を参考にするといいのだ。
+あなたの声のIDなのだ。VOICEVOXの場合、"13"は青山龍星を意味しているのだ。VOICEVOXに収録されている他のキャラクターの声で話して欲しいときは、この値を変更すればいいのだ。キャラクターのIDを調べるには、[この資料](voicevox_speaker_list.md)を参考にするといいのだ。
 
-`@user_speaker_id [数値]`コマンドで設定可能なのだ。
+A.I.VOICEの場合、ここにはキャラクターの名前かプリセットの名前を設定すればいいのだ。例えば、"琴葉 茜"とかを設定すればいいのだ。
 
 #### ✨ user_speed_scale（既定値 1.2）v0.2.0から新設
 
 あなたの声の読み上げの速さの設定なのだ。VOICEVOXのデフォルトは1.0なんだけど、ボクは少し早く読み上げさせたかったので1.2としているのだ。遅くしたい場合はこの値を減らせばいいのだ。
 
-`@user_speed_scale [数値]`コマンドで設定可能なのだ。
+A.I.VOICEの場合、この設定は無効なのだ。読み上げ方はA.I.VOICE Editor側のプリセットで調整して欲しいのだ。
 
 #### ✨ user_pitch_scale（既定値 0.0）v0.2.0から新設
 
 あなたの声の高さの設定なのだ。この値を増やすと、声の高さが上がるのだ。ただ、少しの変化で大きく変わるので、0.1とか0.2とか小刻みに調整するといいのだ。
 
-`@user_pitch_scale [数値]`コマンドで設定可能なのだ。
-
-#### ✨ voicevox_server（既定値 http://127.0.0.1:50021）
-
-VOICEVOXのサーバーのURLを記載するのだ。これがVOICEVOXのデフォルトなので、普通はここを変更する必要はないのだ。分かる人はわかると思うんだけど、このIPは自PCのIPになっているのだ。他のPCで実行しているVOICEVOXに声を生成してもらう場合は、このURLを変更すればいいのだ。ただ、ファイアウォールの設定とかいろいろ面倒なので、分からない人は気にする必要はないのだ。
+A.I.VOICEの場合、この設定は無効なのだ。読み上げ方はA.I.VOICE Editor側のプリセットで調整して欲しいのだ。
 
 #### ✨ chat_api（既定値 OpenAI）
 
@@ -203,13 +220,79 @@ AIに送信する過去の会話の履歴数を設定するのだ。この値が
 
 チャットのログファイルを保存するフォルダを指定するのだ。この値が空文字の場合はログは保存されないのだ。
 
-#### ✨ voicevox_autorun（既定値 true）v0.3.0から新設
+#### ✨ <s>voicevox_autorun（既定値 true）v0.3.0から新設</s>
 
-ZundaGTP起動時にVOICEVOXを自動的に起動するかどうかを指定するのだ。この値がTrueだと自動起動するのだ。
+v0.4.0で削除されたのだ。VOICEVOXやA.I.VOICEなどの必要なソフトウェアは自動的に起動を試みるのだ。
+
+#### ✨ voicevox_server（既定値 http://127.0.0.1:50021）
+
+VOICEVOXのサーバーのURLを記載するのだ。これがVOICEVOXのデフォルトなので、普通はここを変更する必要はないのだ。分かる人はわかると思うんだけど、このIPは自PCのIPになっているのだ。他のPCで実行しているVOICEVOXに声を生成してもらう場合は、このURLを変更すればいいのだ。ただ、ファイアウォールの設定とかいろいろ面倒なので、分からない人は気にする必要はないのだ。
 
 #### ✨ voicevox_path（既定値 %LOCALAPPDATA%/Programs/VOICEVOX/VOICEVOX.exe）v0.3.0から新設
 
 VOICEVOXの実行ファイルのパスを記載するのだ。この項目がない場合は、VOICEVOXのWindowsへの既定のインストール先が使われるのだ。
+
+#### ✨ aivoice_path（既定値 %ProgramW6432%/AI/AIVoice/AIVoiceEditor/AI.Talk.Editor.Api.dll）v0.4.0から新設
+
+A.I.VOICEのDLLのパスを記載するのだ。この項目がない場合は、A.I.VOICEの既定のインストール先の設定が使われるのだ。
+
+## コマンド
+
+### ⛏️ @assistant
+
+チャットアシスタントの声の設定情報を表示するコマンドなのだ。
+
+### ⛏️ @assistant_echo [ on | off ] ( エイリアス @echo )
+
+チャットアシスタントが回答を声に出して読み上げるかどうかを設定するコマンドなのだ。
+
+### ⛏️ @assistant_tts_software [VOICEVOX | AIVOICE] 
+
+チャットアシスタントのテキスト読み上げに使用するソフトウェアを設定するコマンドなのだ。
+
+### ⛏️ @assistant_speaker_id [文字列] ( エイリアス @speaker_id )
+
+チャットアシスタントの声を設定するコマンドなのだ。
+
+### ⛏️ @assistant_speed_scale [数値] ( エイリアス @speed_scale )
+
+チャットアシスタントの読み上げの速さを設定するコマンドなのだ。
+
+### ⛏️ @assistant_pitch_scale [数値] ( エイリアス @pitch_scale )
+
+チャットアシスタントの声の高さを設定するコマンドなのだ。
+
+### ⛏️ @user
+
+あなたの声の設定情報を表示するコマンドなのだ。
+
+### ⛏️ @user_echo [ on | off ]
+
+あなたの書いたテキストを声に出して読み上げるかどうかを設定するコマンドなのだ。
+
+### ⛏️ @user_tts_software [VOICEVOX | AIVOICE] 
+
+あなたの書いたテキストを読み上げるのに使用するソフトウェアを設定するコマンドなのだ。
+
+### ⛏️ @user_speaker_id [文字列]
+
+あなたの声を設定するコマンドなのだ。
+
+### ⛏️ @user_speed_scale [数値]
+
+あなたメッセージを読み上げる速さを設定するコマンドなのだ。
+
+### ⛏️ @user_pitch_scale [数値]
+
+あなたの声の高さを設定するコマンドなのだ。
+
+### ⛏️ @prev ( エイリアス - )
+
+ひとつ前のチャット内容をロードするのだ。連続して実行するとどんどん前に遡っていけるのだ。
+
+### ⛏️ @next ( エイリアス + )
+
+ひとつ後のチャット内容をロードするのだ。
 
 ## 出力ファイル
 
@@ -269,11 +352,16 @@ WindowsのIME設定で「以前のバージョンのMicrosoft IMEを使う」と
 ホームページ：https://psutil.readthedocs.io/en/latest/#  
 ライセンス：BSD 3-Clause License
 
+### 🔖 pythonnet 3.0.3
+
+ホームページ：https://github.com/pythonnet/pythonnet  
+ライセンス：MIT License
+
 ## ライセンス
 
 © 2023 led-mirage
 
-本アプリケーションは [MITライセンス](https://opensource.org/licenses/MIT) の下で公開されています。詳細については、プロジェクトに含まれる LICENSE ファイルを参照してください。
+本アプリケーションは [MITライセンス](https://opensource.org/licenses/MIT) の下で公開されているのだ。詳細については、プロジェクトに含まれる LICENSE ファイルを参照して欲しいのだ。
 
 ## バージョン履歴
 
@@ -295,6 +383,12 @@ WindowsのIME設定で「以前のバージョンのMicrosoft IMEを使う」と
 ### 0.3.1 (2023/12/24)
 
 - バグ修正（ユーザーのメッセージを読み上げるタイミングを変更）
+
+### 0.4.0 (2023/12/28)
+
+- A.I.VOICE対応
+- コマンドの追加
+- 設定ファイル再編
 
 ## さいごに
 
