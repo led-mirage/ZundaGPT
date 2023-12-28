@@ -10,7 +10,7 @@ v0.4.0からA.I.VOICEにも対応したのだ！
 
 ## スクリーンショット
 
-https://github.com/led-mirage/ZundaGPT/assets/139528700/63c6e9bb-d86b-454b-a972-b7ef55496af8
+https://github.com/led-mirage/ZundaGPT/assets/139528700/a06e732f-4a1e-4da2-bc24-0a0bac52816b
 
 ## 動作確認環境
 
