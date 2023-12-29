@@ -9,7 +9,7 @@
 import json
 import os
 from datetime import datetime
-from typing import Tuple
+from typing import Callable
 
 from openai import OpenAI
 from openai import AzureOpenAI
@@ -27,19 +27,39 @@ class Chat:
         self.chat_start_time = datetime.now()
 
     # メッセージを送信して回答を得る
-    def send_message(self, text: str) -> Tuple[str, int]:
+    def send_message(self, text: str, outputChunk: Callable[[str], None], outputSentence: Callable[[str], None]) -> str:
         self.messages.append({"role": "user", "content": text})
         messages = self.messages[-self.history_size:]
         messages.insert(0, {"role": "system", "content": self.instruction})
-        response = self.client.chat.completions.create(model=self.model, messages=messages)
-        role = response.choices[0].message.role
-        content = response.choices[0].message.content
+        stream = self.client.chat.completions.create(model=self.model, messages=messages, stream=True)
+
+        content = ""
+        sentence = ""
+        role = ""
+        for chunk in stream:
+            if chunk.choices[0].delta.role is not None:
+                role = chunk.choices[0].delta.role
+
+            if chunk.choices[0].delta.content is not None:
+                chunk_content = chunk.choices[0].delta.content
+
+                content += chunk_content
+                sentence += chunk_content
+                outputChunk(chunk_content)
+
+                if sentence.endswith(("。", "\n", "？", "！")):
+                    outputSentence(sentence)
+                    sentence = ""
+
+        if sentence != "":
+            outputSentence(sentence)
+
         if content:
             self.messages.append({"role": role, "content": content})
             self.write_chat_log()
-            return content, response.usage.total_tokens
+            return content
         else:
-            return self.bad_response, 0
+            return self.bad_response
     
     # チャットのログを保存する
     def write_chat_log(self):

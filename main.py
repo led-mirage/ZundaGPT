@@ -20,17 +20,17 @@ from settings import Settings
 from voicevox_api import VoicevoxAPI
 
 APP_NAME = "ずんだGPT"
-APP_VERSION = "0.4.0"
+APP_VERSION = "0.5.0"
 COPYRIGHT = "Copyright 2023 led-mirage"
 SETTING_FILE = "settings.json"
-MONTHLY_USAGE_FILE = "monthly_token_usage.json"
 
+settings = None
 assistant_character = None
 user_character = None
 
 # メイン
 def main():
-    global assistant_character, user_character
+    global settings, assistant_character, user_character
 
     print_apptitle()
 
@@ -53,13 +53,10 @@ def main():
     assistant_character = CharacterFactory.create_assistant_character(settings)
     user_character = CharacterFactory.create_user_character(settings)
 
-    monthly_usage = MonthlyUsage(MONTHLY_USAGE_FILE)
-    monthly_usage.load()
-
     while True:
         message = input("あなた > ")
         if message[0] == "@" or message[0] == "+" or message[0] == "-":
-            if exec_command(settings, message, chat):
+            if exec_command(message, chat):
                 print()
                 continue
 
@@ -73,7 +70,8 @@ def main():
 
         print(f"{settings.get_chat_character_name()} > ")
         try:
-            response, tokens = chat.send_message(message)
+            chat.send_message(message, outputChunk, outputSentence)
+            print()
         except openai.AuthenticationError as err:
             print("APIの認証に失敗しました")
             print(err.message)
@@ -83,18 +81,18 @@ def main():
             print(err.message)
             sys.exit()
 
-        monthly_usage.add_token(tokens)
+# チャット応答のチャンク出力用コールバック関数
+def outputChunk(chunk):
+    print(chunk, end="", flush=True)
 
-        response = response.replace("。", "。;")
-        sentences = response.split(";")
-        for text in sentences:
-            if text != "":
-                print(text)
-                if settings.get_assistant_echo_enable() and assistant_character is not None:
-                    try:
-                        assistant_character.talk(text)
-                    except:
-                        pass
+# チャット応答のセンテンス読み上げ用コールバック関数
+def outputSentence(sentence):
+    if settings.get_assistant_echo_enable() and assistant_character is not None:
+        try:
+            assistant_character.talk(sentence)
+        except:
+            pass
+    if not sentence.endswith("\n"):
         print()
 
 # タイトルを表示する
@@ -107,44 +105,44 @@ def print_apptitle():
     print(f"")
 
 # コマンドの実行
-def exec_command(settings, command, chat):
+def exec_command(command, chat):
     words = command.lower().split()
 
     if words[0] == "@assistant":
-        exec_command_assistant(settings, words)
+        exec_command_assistant()
     elif words[0] == "@assistant_echo" or words[0] == "@echo":
-        exec_command_assistant_echo(settings, words)
+        exec_command_assistant_echo(words)
     elif words[0] == "@assistant_tts_software" or words[0] == "@tts_software":
-        exec_command_assistant_tts_software(settings, words)
+        exec_command_assistant_tts_software(words)
     elif words[0] == "@assistant_speaker_id" or words[0] == "@speaker_id":
-        exec_command_assistant_speaker_id(settings, words)
+        exec_command_assistant_speaker_id(words)
     elif words[0] == "@assistant_speed_scale" or words[0] == "@speed_scale":
-        exec_command_assistant_speed_scale(settings, words)
+        exec_command_assistant_speed_scale(words)
     elif words[0] == "@assistant_pitch_scale" or words[0] == "@pitch_scale":
-        exec_command_assistant_pitch_scale(settings, words)
+        exec_command_assistant_pitch_scale(words)
     elif words[0] == "@user":
-        exec_command_user(settings, words)
+        exec_command_user()
     elif words[0] == "@user_echo":
-        exec_command_user_echo(settings, words)
+        exec_command_user_echo(words)
     elif words[0] == "@user_tts_software":
-        exec_command_user_tts_software(settings, words)
+        exec_command_user_tts_software(words)
     elif words[0] == "@user_speaker_id":
-        exec_command_user_speaker_id(settings, words)
+        exec_command_user_speaker_id(words)
     elif words[0] == "@user_speed_scale":
-        exec_command_user_speed_scale(settings, words)
+        exec_command_user_speed_scale(words)
     elif words[0] == "@user_pitch_scale":
-        exec_command_user_pitch_scale(settings, words)
+        exec_command_user_pitch_scale(words)
     elif words[0] == "@prev" or words[0] == "-":
-        exec_command_prev(settings, chat)
+        exec_command_prev(chat)
     elif words[0] == "@next" or words[0] == "+":
-        exec_command_next(settings, chat)
+        exec_command_next(chat)
     else:
         return False
 
     return True
 
 # assistant情報の表示
-def exec_command_assistant(settings: Settings, words: List[str]):
+def exec_command_assistant():
     print(f"echo         : {"on" if settings.get_assistant_echo_enable() else "off"}")
     print(f"tts_software : {settings.get_assistant_tts_software()}")
     print(f"speaker_id   : {settings.get_assistant_speaker_id()}")
@@ -152,7 +150,7 @@ def exec_command_assistant(settings: Settings, words: List[str]):
     print(f"pitch_scale  : {settings.get_assistant_pitch_scale()}")
 
 # assistant_echoの設定
-def exec_command_assistant_echo(settings: Settings, words: List[str]):
+def exec_command_assistant_echo(words: List[str]):
     if len(words) == 1:
         if settings.get_assistant_echo_enable():
             state = "有効"
@@ -179,7 +177,7 @@ def exec_command_assistant_echo(settings: Settings, words: List[str]):
             print("無効なコマンドなのだ")
 
 # assistant_tts_softwareの設定
-def exec_command_assistant_tts_software(settings: Settings, words: List[str]):
+def exec_command_assistant_tts_software(words: List[str]):
     global assistant_character
 
     if len(words) == 1:
@@ -195,7 +193,7 @@ def exec_command_assistant_tts_software(settings: Settings, words: List[str]):
             print("無効なコマンドなのだ")
 
 # assistant_speaker_idの設定
-def exec_command_assistant_speaker_id(settings: Settings, words: List[str]):
+def exec_command_assistant_speaker_id(words: List[str]):
     global assistant_character
 
     if len(words) == 1:
@@ -208,7 +206,7 @@ def exec_command_assistant_speaker_id(settings: Settings, words: List[str]):
         print(f"assistant_speaker_idを '{val}' に変更したのだ")
 
 # assistant_speed_scaleの設定
-def exec_command_assistant_speed_scale(settings: Settings, words: List[str]):
+def exec_command_assistant_speed_scale(words: List[str]):
     global assistant_character
 
     if len(words) == 1:
@@ -224,7 +222,7 @@ def exec_command_assistant_speed_scale(settings: Settings, words: List[str]):
             print("無効なコマンドなのだ")
 
 # assistant_pitch_scaleの設定
-def exec_command_assistant_pitch_scale(settings: Settings, words: List[str]):
+def exec_command_assistant_pitch_scale(words: List[str]):
     global assistant_character
 
     if len(words) == 1:
@@ -240,7 +238,7 @@ def exec_command_assistant_pitch_scale(settings: Settings, words: List[str]):
             print("無効なコマンドなのだ")
 
 # user情報の表示
-def exec_command_user(settings: Settings, words: List[str]):
+def exec_command_user():
     print(f"echo         : {"on" if settings.get_user_echo_enable() else "off"}")
     print(f"tts_software : {settings.get_user_tts_software()}")
     print(f"speaker_id   : {settings.get_user_speaker_id()}")
@@ -248,7 +246,7 @@ def exec_command_user(settings: Settings, words: List[str]):
     print(f"pitch_scale  : {settings.get_user_pitch_scale()}")
 
 # user_echoの設定
-def exec_command_user_echo(settings: Settings, words: List[str]):
+def exec_command_user_echo(words: List[str]):
     if len(words) == 1:
         if settings.get_user_echo_enable():
             state = "有効"
@@ -275,7 +273,7 @@ def exec_command_user_echo(settings: Settings, words: List[str]):
             print("無効なコマンドなのだ")
 
 # user_tts_softwareの設定
-def exec_command_user_tts_software(settings: Settings, words: List[str]):
+def exec_command_user_tts_software(words: List[str]):
     global user_character
 
     if len(words) == 1:
@@ -291,7 +289,7 @@ def exec_command_user_tts_software(settings: Settings, words: List[str]):
             print("無効なコマンドなのだ")
 
 # user_speaker_idの設定
-def exec_command_user_speaker_id(settings: Settings, words: List[str]):
+def exec_command_user_speaker_id(words: List[str]):
     global user_character
 
     if len(words) == 1:
@@ -304,7 +302,7 @@ def exec_command_user_speaker_id(settings: Settings, words: List[str]):
         print(f"user_speaker_idを '{val}' に変更したのだ")
 
 # user_speed_scaleの設定
-def exec_command_user_speed_scale(settings: Settings, words: List[str]):
+def exec_command_user_speed_scale(words: List[str]):
     global user_character
 
     if len(words) == 1:
@@ -320,7 +318,7 @@ def exec_command_user_speed_scale(settings: Settings, words: List[str]):
             print("無効なコマンドなのだ")
 
 # user_pitch_scaleの設定
-def exec_command_user_pitch_scale(settings: Settings, words: List[str]):
+def exec_command_user_pitch_scale(words: List[str]):
     global user_character
 
     if len(words) == 1:
@@ -336,17 +334,17 @@ def exec_command_user_pitch_scale(settings: Settings, words: List[str]):
             print("無効なコマンドなのだ")
 
 # ひとつ前のチャット記録を読み込む
-def exec_command_prev(settings: Settings, chat: Chat):
+def exec_command_prev(chat: Chat):
     chat.load_prev()
-    print_chat_messages(settings, chat)
+    print_chat_messages(chat)
 
 # ひとつ後のチャット記録を読み込む
-def exec_command_next(settings: Settings, chat: Chat):
+def exec_command_next(chat: Chat):
     chat.load_next()
-    print_chat_messages(settings, chat)
+    print_chat_messages(chat)
 
 # チャットメッセージ全体の再表示
-def print_chat_messages(settings: Settings, chat: Chat):
+def print_chat_messages(chat: Chat):
     os.system('cls' if os.name == 'nt' else 'clear')
     print_apptitle()
     for message in chat.messages:
