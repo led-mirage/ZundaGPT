@@ -2,7 +2,7 @@
 #
 # WAVEデータ作成モジュール
 #
-# Copyright (c) 2023 led-mirage
+# Copyright (c) 2023-2024 led-mirage
 # このソースコードは MITライセンス の下でライセンスされています。
 # ライセンスの詳細については、このプロジェクトのLICENSEファイルを参照してください。
 
@@ -33,5 +33,4 @@ def play_sound(wave_data):
         stream.stop_stream()
         stream.close()
         audio.terminate()
-        audio.close()
         wave_file.close()

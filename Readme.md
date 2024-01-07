@@ -1,6 +1,6 @@
-# ずんだGPT
+# <img src="ZundaGPT.ico" width="48"> ずんだGPT
 
-Copyright (c) 2023 led-mirage
+Copyright (c) 2023-2024 led-mirage
 
 ## 概要
 
@@ -398,6 +398,10 @@ WindowsのIME設定で「以前のバージョンのMicrosoft IMEを使う」と
 
 - レスポンス性の向上（OpenAI APIのレスポンスをチャンク処理するように変更）
 - 利用トークン記録機能の廃止
+
+### 0.5.1 (2024/01/07)
+
+- リソース開放処理の修正
 
 ## さいごに
 

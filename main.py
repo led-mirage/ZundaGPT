@@ -2,7 +2,7 @@
 #
 # メインモジュール
 #
-# Copyright (c) 2023 led-mirage
+# Copyright (c) 2023-2024 led-mirage
 # このソースコードは MITライセンス の下でライセンスされています。
 # ライセンスの詳細については、このプロジェクトのLICENSEファイルを参照してください。
 
@@ -20,8 +20,8 @@ from settings import Settings
 from voicevox_api import VoicevoxAPI
 
 APP_NAME = "ずんだGPT"
-APP_VERSION = "0.5.0"
-COPYRIGHT = "Copyright 2023 led-mirage"
+APP_VERSION = "0.5.1"
+COPYRIGHT = "Copyright 2023-2024 led-mirage"
 SETTING_FILE = "settings.json"
 
 settings = None
