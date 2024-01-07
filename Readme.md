@@ -61,7 +61,7 @@ A.I.VOICE … https://aivoice.jp/
 
 以下のリンクから ZundaGPT.ZIP をダウンロードして、作成したフォルダに展開するのだ。
 
-https://github.com/led-mirage/ZundaGPT/releases/tag/v0.5.0
+https://github.com/led-mirage/ZundaGPT/releases/tag/v0.5.1
 
 #### 3. 実行
 
