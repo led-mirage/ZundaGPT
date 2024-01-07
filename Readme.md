@@ -1,4 +1,4 @@
-# <img src="ZundaGPT.ico" width="48"> ずんだGPT
+# <img src="zundagpt.ico" width="48"> ずんだGPT
 
 Copyright (c) 2023-2024 led-mirage
 
