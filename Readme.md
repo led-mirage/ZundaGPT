@@ -8,6 +8,8 @@ Copyright (c) 2023-2024 led-mirage
 
 v0.4.0からA.I.VOICEにも対応したのだ！
 
+v0.6.0からCOEIROINKにも対応したのだ！
+
 ## スクリーンショット
 
 https://github.com/led-mirage/ZundaGPT/assets/139528700/3996d2d5-0180-495d-8b12-1966e273d625
@@ -19,6 +21,7 @@ https://github.com/led-mirage/ZundaGPT/assets/139528700/3996d2d5-0180-495d-8b12-
 - VOICEVOX 0.14.10
 - VOICEVOX ENGINE 0.14.6
 - A.I.VOICE Editor 1.4.9.0
+- COEIROINK v.2.2.1
 
 ## 必要なもの
 
@@ -32,7 +35,7 @@ APIキーの作成は特に難しくないのだ。OpenAI APIの設定画面に�
 
 OpenAI … https://platform.openai.com/
 
-### ✅ VOICEVOX
+### ✅ VOICEVOX（オプション）
 
 ずんだもんの声でチャットを読み上げてもらうにはVOICEVOXをインストールしておく必要があるのだ。VOICEVOXは公式サイトからダウンロードして簡単にインストールできるのだ。
 
@@ -49,6 +52,12 @@ A.I.VOICEで話してもらうにはA.I.VOICEを購入してインストール�
 
 A.I.VOICE … https://aivoice.jp/
 
+### ✅ COEIROINK（オプション）
+
+COEIROINKはVOICEVOXと同じ無料のテキスト読み上げソフトウェアなのだ。COEIROINKをダウンロードしてインストールしておけば、ずんだGPTでも使えるのだ。
+
+COEIROINK … https://coeiroink.com/
+
 ## 実行方法
 
 ### 🛩️ 実行ファイル（EXE）を使う場合
@@ -61,7 +70,7 @@ A.I.VOICE … https://aivoice.jp/
 
 以下のリンクから ZundaGPT.ZIP をダウンロードして、作成したフォルダに展開するのだ。
 
-https://github.com/led-mirage/ZundaGPT/releases/tag/v0.5.1
+https://github.com/led-mirage/ZundaGPT/releases/tag/v0.6.0
 
 #### 3. 実行
 
@@ -118,6 +127,10 @@ Windowsの場合は、Windowsの検索窓で「環境変数を編集」で検索
 
 `settings.json`ファイルにはこのアプリの設定情報が記載されているのだ。普通は特に変更する必要はないけど、自分用にカスタマイズしたい人は、このファイルをいじるといいのだ。以下に設定項目を簡単に紹介するのだ。
 
+#### ✨ assistant_prompt（既定値 ずんだ）v0.6.0から新設
+
+チャットアシスタントのプロンプトに表示する文字列の設定なのだ。
+
 #### ✨ assistant_echo（既定値 true）v0.2.0から新設
 
 チャットアシスタントが声に出して読み上げるかどうかの設定なのだ。設定できる値は`true`か`false`の２つなのだ。
@@ -126,13 +139,15 @@ Windowsの場合は、Windowsの検索窓で「環境変数を編集」で検索
 
 #### ✨ assistant_tts_software（既定値 VOICEVOX）v0.4.0から新設
 
-チャットアシスタントのテキスト読み上げに使用するソフトウェアを選択するのだ。設定できる値は、"VOICEVOX"か"AIVOICE"、もしくはテキストを読み上げない場合に使用する""の３つなのだ。
+チャットアシスタントのテキスト読み上げに使用するソフトウェアを選択するのだ。設定できる値は、"VOICEVOX"、"AIVOICE"、"COEIROINK"、もしくはテキストを読み上げない場合に使用する""の４つなのだ。
 
 #### ✨ assistant_speaker_id（既定値 3）
 
 チャットアシスタントの声のIDなのだ。VOICEVOXの場合、"3"はずんだもんを意味しているのだ。VOICEVOXに収録されている他のキャラクターの声で話して欲しいときは、この値を変更すればいいのだ。キャラクターのIDを調べるには、[この資料](voicevox_speaker_list.md)を参考にするといいのだ。
 
 A.I.VOICEの場合、ここにはキャラクターの名前かプリセットの名前を設定すればいいのだ。例えば、"琴葉 茜"とかを設定すればいいのだ。
+
+COEIROINKの場合、ここにはキャラクターのStyleIdを指定するのだ。StyleIdは[この資料](coeiroink_speaker_list.md)を参考にしてほしいのだ。ただこの資料に載っているのは一部のキャラクターのみなのだ。使いたいキャラのStyleIdを調べるには、coeiroink_speaker_list.pyを実行してほしいのだ。
 
 ※旧名 speaker_id … v0.4.0から変更
 
@@ -152,19 +167,25 @@ A.I.VOICEの場合、この設定は無効なのだ。読み上げ方はA.I.VOIC
 
 ※旧名 pitch_scale … v0.4.0から変更
 
+#### ✨ user_prompt（既定値 あなた）v0.6.0から新設
+
+あなたのメッセージのプロンプトに表示する文字列の設定なのだ。
+
 #### ✨ user_echo（既定値 true）v0.2.0から新設
 
 あなたのメッセージを声に出して読み上げるかどうかの設定なのだ。設定できる値は`true`か`false`の２つなのだ。
 
 #### ✨ user_tts_software（既定値 VOICEVOX）v0.4.0から新設
 
-あなたのメッセージのテキスト読み上げに使用するソフトウェアを選択するのだ。設定できる値は、"VOICEVOX"か"AIVOICE"、もしくはテキストを読み上げない場合に使用する""の３つなのだ。
+あなたのメッセージのテキスト読み上げに使用するソフトウェアを選択するのだ。設定できる値は、"VOICEVOX"、"AIVOICE"、"COEIROINK"、もしくはテキストを読み上げない場合に使用する""の４つなのだ。
 
 #### ✨ user_speaker_id（既定値 13）v0.2.0から新設
 
 あなたの声のIDなのだ。VOICEVOXの場合、"13"は青山龍星を意味しているのだ。VOICEVOXに収録されている他のキャラクターの声で話して欲しいときは、この値を変更すればいいのだ。キャラクターのIDを調べるには、[この資料](voicevox_speaker_list.md)を参考にするといいのだ。
 
 A.I.VOICEの場合、ここにはキャラクターの名前かプリセットの名前を設定すればいいのだ。例えば、"琴葉 茜"とかを設定すればいいのだ。
+
+COEIROINKの場合、ここにはキャラクターのStyleIdを指定するのだ。StyleIdは[この資料](coeiroink_speaker_list.md)を参考にしてほしいのだ。ただこの資料に載っているのは一部のキャラクターのみなのだ。使いたいキャラのStyleIdを調べるには、coeiroink_speaker_list.pyを実行してほしいのだ。
 
 #### ✨ user_speed_scale（既定値 1.2）v0.2.0から新設
 
@@ -198,9 +219,9 @@ OpenAIのテキスト生成のモデル名を指定するのだ。これを変�
 モデルの一覧 … https://platform.openai.com/docs/models  
 利用料金 … https://openai.com/pricing#language-models
 
-#### ✨ chat_character_name（既定値 ずんだ）
+#### ✨ <s>chat_character_name（既定値 ずんだ）</s>
 
-コマンドプロンプトに表示するキャラクターの名前を設定すのだ。話者を変えた場合や、自分の好きな名前にしたい場合はここを編集するといいのだ。
+v0.6.0で削除されたのだ。この設定は assistant_prompt に移行されたのだ。
 
 #### ✨ chat_instraction（既定値 君は優秀なアシスタント…以下略）
 
@@ -236,17 +257,31 @@ VOICEVOXの実行ファイルのパスを記載するのだ。この項目がな
 
 A.I.VOICEのDLLのパスを記載するのだ。この項目がない場合は、A.I.VOICEの既定のインストール先の設定が使われるのだ。
 
+#### ✨ coeiroink_path（既定値 空文字）v0.6.0から新設
+
+COEIROINKの実行ファイルのパスを記載するのだ。COEIROINKは既定のインストール場所がないから、自分がインストールした場所（解凍した場所）を記載するのだ。例えば次のように記載するのだ。
+
+```json
+"coeiroink_path": "C:/Program Files/COEIROINK_GPU/COEIROINKv2.exe"
+```
+
+なんのことかわからない人は、COEIROINKを起動してから、ずんだGPTを使えば問題ないのだ。
+
 ## コマンド
 
 ### ⛏️ @assistant
 
 チャットアシスタントの声の設定情報を表示するコマンドなのだ。
 
+### ⛏️ @assistant_prompt [文字列]
+
+チャットアシスタントのプロンプトを設定するコマンドなのだ。
+
 ### ⛏️ @assistant_echo [ on | off ] ( エイリアス @echo )
 
 チャットアシスタントが回答を声に出して読み上げるかどうかを設定するコマンドなのだ。
 
-### ⛏️ @assistant_tts_software [VOICEVOX | AIVOICE] 
+### ⛏️ @assistant_tts_software [VOICEVOX | AIVOICE | COEIROINK] 
 
 チャットアシスタントのテキスト読み上げに使用するソフトウェアを設定するコマンドなのだ。
 
@@ -266,11 +301,15 @@ A.I.VOICEのDLLのパスを記載するのだ。この項目がない場合は�
 
 あなたの声の設定情報を表示するコマンドなのだ。
 
+### ⛏️ @user_prompt [文字列]
+
+あなたのプロンプト文字列を設定するコマンドなのだ。
+
 ### ⛏️ @user_echo [ on | off ]
 
 あなたの書いたテキストを声に出して読み上げるかどうかを設定するコマンドなのだ。
 
-### ⛏️ @user_tts_software [VOICEVOX | AIVOICE] 
+### ⛏️ @user_tts_software [VOICEVOX | AIVOICE | COEIROINK] 
 
 あなたの書いたテキストを読み上げるのに使用するソフトウェアを設定するコマンドなのだ。
 
@@ -402,6 +441,11 @@ WindowsのIME設定で「以前のバージョンのMicrosoft IMEを使う」と
 ### 0.5.1 (2024/01/07)
 
 - リソース開放処理の修正
+
+### 0.6.0 (2024/01/14)
+
+- COEIROINK対応
+- プロンプト文字列設定の変更と追加
 
 ## さいごに
 

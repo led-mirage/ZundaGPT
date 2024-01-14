@@ -15,12 +15,12 @@ import openai
 from character import CharacterFactory
 from chat import ChatFactory
 from chat import Chat
-from monthly_usage import MonthlyUsage
 from settings import Settings
 from voicevox_api import VoicevoxAPI
+from coeiroink_api import CoeiroinkApi
 
 APP_NAME = "ずんだGPT"
-APP_VERSION = "0.5.1"
+APP_VERSION = "0.6.0"
 COPYRIGHT = "Copyright 2023-2024 led-mirage"
 SETTING_FILE = "settings.json"
 
@@ -37,6 +37,7 @@ def main():
     settings = Settings(SETTING_FILE)
     settings.load()
     VoicevoxAPI.server = settings.get_voicevox_server()
+    CoeiroinkApi.server = settings.get_coeiroink_server()
 
     try:
         chat = ChatFactory.create(
@@ -54,7 +55,7 @@ def main():
     user_character = CharacterFactory.create_user_character(settings)
 
     while True:
-        message = input("あなた > ")
+        message = input(f"{settings.get_user_prompt()} > ")
         if message[0] == "@" or message[0] == "+" or message[0] == "-":
             if exec_command(message, chat):
                 print()
@@ -68,7 +69,7 @@ def main():
             except:
                 pass
 
-        print(f"{settings.get_chat_character_name()} > ")
+        print(f"{settings.get_assistant_prompt()} > ")
         try:
             chat.send_message(message, outputChunk, outputSentence)
             print()
@@ -110,6 +111,8 @@ def exec_command(command, chat):
 
     if words[0] == "@assistant":
         exec_command_assistant()
+    elif words[0] == "@assistant_prompt":
+        exec_command_assistant_prompt(words)
     elif words[0] == "@assistant_echo" or words[0] == "@echo":
         exec_command_assistant_echo(words)
     elif words[0] == "@assistant_tts_software" or words[0] == "@tts_software":
@@ -122,6 +125,8 @@ def exec_command(command, chat):
         exec_command_assistant_pitch_scale(words)
     elif words[0] == "@user":
         exec_command_user()
+    elif words[0] == "@user_prompt":
+        exec_command_user_prompt(words)
     elif words[0] == "@user_echo":
         exec_command_user_echo(words)
     elif words[0] == "@user_tts_software":
@@ -143,11 +148,24 @@ def exec_command(command, chat):
 
 # assistant情報の表示
 def exec_command_assistant():
+    print(f"prompt       : {settings.get_assistant_prompt()}")
     print(f"echo         : {"on" if settings.get_assistant_echo_enable() else "off"}")
     print(f"tts_software : {settings.get_assistant_tts_software()}")
     print(f"speaker_id   : {settings.get_assistant_speaker_id()}")
     print(f"speed_scale  : {settings.get_assistant_speed_scale()}")
     print(f"pitch_scale  : {settings.get_assistant_pitch_scale()}")
+
+# assistant_promptの設定
+def exec_command_assistant_prompt(words: List[str]):
+    global assistant_character
+
+    if len(words) == 1:
+        print(f"assistant_promptは '{settings.get_assistant_prompt()}' なのだ")
+    else:
+        prompt = words[1]
+        settings.set_assistant_prompt(prompt)
+        settings.save()
+        print(f"assistant_promptを '{prompt}' に変更したのだ")
 
 # assistant_echoの設定
 def exec_command_assistant_echo(words: List[str]):
@@ -184,7 +202,7 @@ def exec_command_assistant_tts_software(words: List[str]):
         print(f"assistant_tts_softwareは {settings.get_assistant_tts_software()} なのだ")
     else:
         val = words[1].upper()
-        if val == "VOICEVOX" or val == "AIVOICE":
+        if val == "VOICEVOX" or val == "AIVOICE" or val == "COEIROINK":
             settings.set_assistant_tts_software(val)
             settings.save()
             assistant_character = CharacterFactory.create_assistant_character(settings)
@@ -239,11 +257,24 @@ def exec_command_assistant_pitch_scale(words: List[str]):
 
 # user情報の表示
 def exec_command_user():
+    print(f"prompt       : {settings.get_user_prompt()}")
     print(f"echo         : {"on" if settings.get_user_echo_enable() else "off"}")
     print(f"tts_software : {settings.get_user_tts_software()}")
     print(f"speaker_id   : {settings.get_user_speaker_id()}")
     print(f"speed_scale  : {settings.get_user_speed_scale()}")
     print(f"pitch_scale  : {settings.get_user_pitch_scale()}")
+
+# user_promptの設定
+def exec_command_user_prompt(words: List[str]):
+    global assistant_character
+
+    if len(words) == 1:
+        print(f"user_promptは '{settings.get_user_prompt()}' なのだ")
+    else:
+        prompt = words[1]
+        settings.set_user_prompt(prompt)
+        settings.save()
+        print(f"user_promptを '{prompt}' に変更したのだ")
 
 # user_echoの設定
 def exec_command_user_echo(words: List[str]):
@@ -280,7 +311,7 @@ def exec_command_user_tts_software(words: List[str]):
         print(f"user_tts_softwareは {settings.get_user_tts_software()} なのだ")
     else:
         val = words[1].upper()
-        if val == "VOICEVOX" or val == "AIVOICE":
+        if val == "VOICEVOX" or val == "AIVOICE" or val == "COEIROINK":
             settings.set_user_tts_software(val)
             settings.save()
             user_character = CharacterFactory.create_user_character(settings)
@@ -349,10 +380,10 @@ def print_chat_messages(chat: Chat):
     print_apptitle()
     for message in chat.messages:
         if message["role"] == "user":
-            print(f"あなた > {message["content"]}")
+            print(f"{settings.get_user_prompt()} > {message["content"]}")
             print("")
         elif message["role"] == "assistant":
-            print(f"{settings.get_chat_character_name()} > ")
+            print(f"{settings.get_assistant_prompt()} > ")
             print(message["content"])
             print("")
 

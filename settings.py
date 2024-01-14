@@ -2,7 +2,7 @@
 #
 # アプリケーション設定クラス
 #
-# Copyright (c) 2023 led-mirage
+# Copyright (c) 2023-2024 led-mirage
 # このソースコードは MITライセンス の下でライセンスされています。
 # ライセンスの詳細については、このプロジェクトのLICENSEファイルを参照してください。
 
@@ -11,9 +11,10 @@ import os
 import threading
 
 from voicevox_api import VoicevoxAPI
+from coeiroink_api import CoeiroinkApi
 
 class Settings:
-    FILE_VER = 4
+    FILE_VER = 5
 
     def __init__(self, setting_file_path):
         self._setting_file_path = setting_file_path
@@ -21,11 +22,13 @@ class Settings:
         self._init_member()
 
     def _init_member(self):
+        self._assistant_prompt = "ずんだ"
         self._assistant_echo = True
         self._assistant_tts_software = "VOICEVOX"
         self._assistant_speaker_id = "3"    # ずんだもん
         self._assistant_speed_scale = 1.2
         self._assistant_pitch_scale = 0.0
+        self._user_prompt = "あなた"
         self._user_echo = True
         self._user_tts_software = "VOICEVOX"
         self._user_speaker_id = "13"    # 青山龍星
@@ -33,7 +36,6 @@ class Settings:
         self._user_pitch_scale = 0.0
         self._chat_api = "OpenAI"
         self._chat_model = "gpt-3.5-turbo-1106"
-        self._chat_character_name = "ずんだ"
         self._chat_instruction = "君は優秀なアシスタント。ずんだもんの話し方で話す。具体的には語尾に「のだ」または「なのだ」をつけて自然に話す。回答は１００文字以内で簡潔に行う。"
         self._chat_bad_response = "答えられないのだ"
         self._chat_history_size = 6
@@ -43,6 +45,17 @@ class Settings:
         self._voicevox_path = CharacterVoicevox.DEFAULT_INSTALL_PATH
         from character import CharacterAIVoice
         self._aivoice_path = CharacterAIVoice.DEFAULT_INSTALL_PATH
+        self._coeiroink_server = CoeiroinkApi.DEFAULT_SERVER
+        self._coeiroink_path = ""
+
+    # プロンプト（アシスタント）
+    def get_assistant_prompt(self):
+        with self._lock:
+            return self._assistant_prompt
+
+    def set_assistant_prompt(self, prompt):
+        with self._lock:
+            self._assistant_prompt = prompt
 
     # 発話するか（アシスタント）
     def get_assistant_echo_enable(self):
@@ -88,6 +101,15 @@ class Settings:
     def set_assistant_pitch_scale(self, pitch_scale):
         with self._lock:
             self._assistant_pitch_scale = pitch_scale
+
+    # プロンプト（ユーザー）
+    def get_user_prompt(self):
+        with self._lock:
+            return self._user_prompt
+
+    def set_user_prompt(self, prompt):
+        with self._lock:
+            self._user_prompt = prompt
 
     # 発話するか（ユーザー）
     def get_user_echo_enable(self):
@@ -152,15 +174,6 @@ class Settings:
         with self._lock:
             self._chat_model = chat_model
 
-    # チャットエージェントのキャラ名（表示用）
-    def get_chat_character_name(self):
-        with self._lock:
-            return self._chat_character_name
-
-    def set_chat_character_name(self, chat_character_name):
-        with self._lock:
-            self._chat_character_name = chat_character_name
-
     # チャットエージェントへの指示
     def get_chat_instruction(self):
         with self._lock:
@@ -224,6 +237,24 @@ class Settings:
         with self._lock:
             self._aivoice_path = path
 
+    # COEIROINK サーバーのURL
+    def get_coeiroink_server(self):
+        with self._lock:
+            return self._coeiroink_server
+    
+    def set_coeiroink_server(self, coeiroink_server):
+        with self._lock:
+            self._coeiroink_server = coeiroink_server
+
+    # COEIROINKインストールパス
+    def get_coeiroink_path(self):
+        with self._lock:
+            return self._coeiroink_path
+        
+    def set_coeiroink_path(self, path):
+        with self._lock:
+            self._coeiroink_path = path
+
     # 設定ファイルを保存する
     def save(self):
         with self._lock:
@@ -233,11 +264,13 @@ class Settings:
         with open(self._setting_file_path, "w", encoding="utf-8") as file:
             setting = {}
             setting["file_ver"] = Settings.FILE_VER
+            setting["assistant_prompt"] = self._assistant_prompt
             setting["assistant_echo"] = self._assistant_echo
             setting["assistant_tts_software"] = self._assistant_tts_software
             setting["assistant_speaker_id"] = self._assistant_speaker_id
             setting["assistant_speed_scale"] = self._assistant_speed_scale
             setting["assistant_pitch_scale"] = self._assistant_pitch_scale
+            setting["user_prompt"] = self._user_prompt
             setting["user_echo"] = self._user_echo
             setting["user_tts_software"] = self._user_tts_software
             setting["user_speaker_id"] = self._user_speaker_id
@@ -245,7 +278,6 @@ class Settings:
             setting["user_pitch_scale"] = self._user_pitch_scale
             setting["chat_api"] = self._chat_api
             setting["chat_model"] = self._chat_model
-            setting["chat_character_name"] = self._chat_character_name
             setting["chat_instruction"] = self._chat_instruction
             setting["chat_bad_response"] = self._chat_bad_response
             setting["chat_history_size"] = self._chat_history_size
@@ -253,6 +285,8 @@ class Settings:
             setting["voicevox_server"] = self._voicevox_server
             setting["voicevox_path"] = self._voicevox_path
             setting["aivoice_path"] = self._aivoice_path
+            setting["coeiroink_server"] = self._coeiroink_server
+            setting["coeiroink_path"] = self._coeiroink_path
             json.dump(setting, file, ensure_ascii=False, indent=4)
 
     # 設定ファイルを読み込む
@@ -266,11 +300,13 @@ class Settings:
             with open(self._setting_file_path, "r", encoding="utf-8") as file:
                 setting = json.load(file)
                 file_ver = setting.get("file_ver", 1)
+                self._assistant_prompt = setting.get("assistant_prompt", self._assistant_prompt)
                 self._assistant_echo = setting.get("assistant_echo", self._assistant_echo)
                 self._assistant_tts_software = setting.get("assistant_tts_software", self._assistant_tts_software)
                 self._assistant_speaker_id = setting.get("assistant_speaker_id", self._assistant_speaker_id)
                 self._assistant_speed_scale = setting.get("assistant_speed_scale", self._assistant_speed_scale)
                 self._assistant_pitch_scale = setting.get("assistant_pitch_scale", self._assistant_pitch_scale)
+                self._user_prompt = setting.get("user_prompt", self._user_prompt)
                 self._user_echo = setting.get("user_echo", self._user_echo)
                 self._user_tts_software = setting.get("user_tts_software", self._user_tts_software)
                 self._user_speaker_id = setting.get("user_speaker_id", self._user_speaker_id)
@@ -278,7 +314,6 @@ class Settings:
                 self._user_pitch_scale = setting.get("user_pitch_scale", self._user_pitch_scale)
                 self._chat_api = setting.get("chat_api", self._chat_api)
                 self._chat_model = setting.get("chat_model", self._chat_model)
-                self._chat_character_name = setting.get("chat_character_name", self._chat_character_name)
                 self._chat_instruction = setting.get("chat_instruction", self._chat_instruction)
                 self._chat_bad_response = setting.get("chat_bad_response", self._chat_bad_response)
                 self._chat_history_size = setting.get("chat_history_size", self._chat_history_size)
@@ -286,6 +321,8 @@ class Settings:
                 self._voicevox_server = setting.get("voicevox_server", self._voicevox_server)
                 self._voicevox_path = setting.get("voicevox_path", self._voicevox_path)
                 self._aivoice_path = setting.get("aivoice_path", self._aivoice_path)
+                self._coeiroink_server = setting.get("coeiroink_server", self._coeiroink_server)
+                self._coeiroink_path = setting.get("coeiroink_path", self._coeiroink_path)
 
         if file_ver < Settings.FILE_VER:
             self._save_nolock()

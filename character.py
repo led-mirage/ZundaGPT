@@ -2,7 +2,7 @@
 #
 # VOICEキャラクターモジュール
 #
-# Copyright (c) 2023 led-mirage
+# Copyright (c) 2023-2024 led-mirage
 # このソースコードは MITライセンス の下でライセンスされています。
 # ライセンスの詳細については、このプロジェクトのLICENSEファイルを参照してください。
 
@@ -16,6 +16,7 @@ import psutil
 from settings import Settings
 from sound import play_sound
 from voicevox_api import VoicevoxAPI
+from coeiroink_api import CoeiroinkApi
 
 # キャラクターファクトリ
 class CharacterFactory:
@@ -33,6 +34,12 @@ class CharacterFactory:
             return CharacterAIVoice(
                 settings.get_aivoice_path(),
                 settings.get_assistant_speaker_id())
+        elif tts_software == "COEIROINK":
+            return CharacterCoeiroink(
+                settings.get_coeiroink_path(),
+                settings.get_assistant_speaker_id(),
+                settings.get_assistant_speed_scale(),
+                settings.get_assistant_pitch_scale())
         else:
             return None
 
@@ -50,6 +57,12 @@ class CharacterFactory:
             return CharacterAIVoice(
                 settings.get_aivoice_path(),
                 settings.get_user_speaker_id())
+        elif tts_software == "COEIROINK":
+            return CharacterCoeiroink(
+                settings.get_coeiroink_path(),
+                settings.get_user_speaker_id(),
+                settings.get_user_speed_scale(),
+                settings.get_user_pitch_scale())
         else:
             return None
 
@@ -137,3 +150,42 @@ class CharacterAIVoice:
                     tts_control.StartHost()
                 tts_control.Connect()
                 cls._tts_control = tts_control
+
+# COEIROINKキャラクター
+class CharacterCoeiroink:
+    def __init__(self, coeiroink_path, speaker_id, speed_scale, pitch_scale):
+        self.coeiroink_path = coeiroink_path
+        self.speed_scale = speed_scale
+        self.pitch_scale = pitch_scale
+        self.speaker_id = speaker_id
+        CharacterCoeiroink.run_coeiroink(self.coeiroink_path)
+
+    # 話す
+    def talk(self, text):
+        if CharacterCoeiroink.run_coeiroink(self.coeiroink_path):
+            wave_data = CoeiroinkApi.get_wave_data(
+                self.speaker_id, text, speedScale=self.speed_scale, pitchScale=self.pitch_scale, volumeScale=0.8)
+            play_sound(wave_data)
+
+    # COEIROINKが起動しているかどうかを調べる
+    @staticmethod
+    def is_coeiroink_running():
+        return CoeiroinkApi.get_status() is not None
+
+    # COEIROINKが起動していなかったら起動する
+    @staticmethod
+    def run_coeiroink(coeiroink_path):
+        if CharacterCoeiroink.is_coeiroink_running():
+            return True
+        else:
+            if os.path.isfile(coeiroink_path):
+                subprocess.Popen(coeiroink_path, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                loop_count = 0
+                while CharacterCoeiroink.is_coeiroink_running() == False:
+                    time.sleep(1)
+                    loop_count += 1
+                    if loop_count >= 10:
+                        return False
+                return True
+            else:
+                return False
